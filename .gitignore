@@ -1,0 +1,6 @@
+target/
+.DS_Store
+# Archivos temporales de Word mientras el documento está abierto
+~$*
+# Carpeta generada por una extensión de VS Code, no es parte del proyecto
+.github/modernize/

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Fondo de Bikini",
+            "request": "launch",
+            "mainClass": "com.graphics.Main",
+            "projectName": "ciudad-conduccion",
+            "console": "integratedTerminal"
+        }
+    ]
+}

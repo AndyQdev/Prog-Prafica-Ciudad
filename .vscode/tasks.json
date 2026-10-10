@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Ejecutar Fondo de Bikini (Maven)",
+            "type": "shell",
+            "command": "${workspaceFolder}/mvnw.cmd",
+            "args": ["-q", "compile", "exec:exec"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pruebas (Maven)",
+            "type": "shell",
+            "command": "${workspaceFolder}/mvnw.cmd",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": "test",
+            "problemMatcher": []
+        }
+    ]
+}
