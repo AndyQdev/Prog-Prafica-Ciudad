@@ -27,10 +27,16 @@ public class Auto {
     public float velocidad = 0; // Unidades por segundo; un valor negativo significa reversa.
     public boolean frenando = false; // true mientras el conductor frena; enciende las luces de freno.
     private Trafico trafico; // Botes con los que también puede chocar; puede ser null.
+    private Chata chata; // Remolque enganchado atrás; puede ser null.
 
     /** Indica con qué tráfico debe comprobar choques (null si no hay tráfico, como en los tests). */
     public void usarTrafico(Trafico trafico) {
         this.trafico = trafico; // Guarda la referencia.
+    }
+
+    /** Engancha la chata: desde ahora la arrastra y no avanza si la chata chocaría. */
+    public void usarChata(Chata chata) {
+        this.chata = chata; // Guarda la referencia.
     }
 
     /** Coloca nuevamente el auto en su punto de partida. */
@@ -72,6 +78,9 @@ public class Auto {
         }
         girar(direccion * velocidad * 0.11f * deltaTime); // Gira según la velocidad; en reversa invierte el giro.
         mover(deltaTime); // Avanza en la dirección del frente.
+        if (chata != null) { // Si hay chata enganchada...
+            chata.seguir(x, z, angulo); // ...el enganche la arrastra a su nueva posición.
+        }
     }
 
     /** Avanza; si choca de costado se desliza por la acera y si choca de frente rebota un poco. */
@@ -118,6 +127,15 @@ public class Auto {
     public boolean puedeOcupar(float nuevaX, float nuevaZ, float giro) {
         if (!Mapa.puedeOcupar(nuevaX, nuevaZ, giro, MEDIO_ANCHO, MEDIO_LARGO)) { // Primero revisa la ciudad.
             return false; // Una manzana o el borde bloquean el paso.
+        }
+        if (chata != null) { // La chata también tiene que caber donde la dejaría este movimiento.
+            float[] c = chata.posicionTras(nuevaX, nuevaZ, giro); // Dónde quedaría la chata.
+            if (!Mapa.puedeOcupar(c[0], c[1], c[2], Chata.MEDIO_ANCHO, Chata.MEDIO_LARGO)) { // Chocaría con una manzana o el borde.
+                return false; // El auto no puede avanzar.
+            }
+            if (trafico != null && !trafico.permite(c[0], c[1], chata.x, chata.z)) { // Chocaría con un bote.
+                return false; // El auto no puede avanzar.
+            }
         }
         return trafico == null || trafico.permite(nuevaX, nuevaZ, x, z); // Después revisa el tráfico.
     }

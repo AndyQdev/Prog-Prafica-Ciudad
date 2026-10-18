@@ -37,10 +37,13 @@ public class Trafico {
         vehiculos = crear(); // Crea los botes de nuevo.
     }
 
-    /** Mueve cada bote; frena si el jugador o un bote de su mismo sentido está delante. */
-    public void actualizar(float deltaTime, Auto auto) {
+    /** Mueve cada bote; frena si el jugador, su chata o un bote de su mismo sentido está delante. */
+    public void actualizar(float deltaTime, Auto auto, Chata chata) {
         for (Vehiculo vehiculo : vehiculos) { // Revisa cada bote.
             boolean bloqueado = vehiculo.tieneDelante(auto.x, auto.z); // Frena si el jugador está delante.
+            if (vehiculo.tieneDelante(chata.x, chata.z)) { // También frena si la chata está delante.
+                bloqueado = true; // Así no la atraviesa.
+            }
             for (Vehiculo otro : vehiculos) { // Compara con los demás botes.
                 boolean delante = vehiculo.tieneDelante(otro.carrilX(), otro.carrilZ()); // El otro está en su camino.
                 if (otro != vehiculo && vehiculo.mismoSentido(otro) && delante) { // Solo espera a quien va en su sentido.

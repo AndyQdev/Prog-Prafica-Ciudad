@@ -14,6 +14,7 @@ import com.graphics.motor.Ventana; // Ventana y teclado de GLFW.
 import com.graphics.personajes.Personajes; // Don Cangrejo, Plankton, Patricio y Calamardo.
 import com.graphics.personajes.VidaMarina; // Medusas y burbujas.
 import com.graphics.vehiculos.Auto; // Botemóvil del jugador.
+import com.graphics.vehiculos.Chata; // Remolque enganchado al auto.
 import com.graphics.vehiculos.Trafico; // Botes autónomos.
 import static org.lwjgl.glfw.GLFW.*; // Constantes de las teclas.
 import static org.lwjgl.opengl.GL33.*; // Limpiar la pantalla al comenzar cada cuadro.
@@ -33,6 +34,7 @@ public class Juego {
     protected final Camara camara = new Camara(); // Decide desde dónde se mira.
     protected final Iluminacion luz = new Iluminacion(); // Día, noche y faros.
     protected final Auto auto = new Auto(); // Botemóvil del jugador.
+    protected final Chata chata = new Chata(); // Remolque que arrastra el auto.
     protected final Trafico trafico = new Trafico(); // Cuatro botes autónomos.
     protected final Entregas entregas = new Entregas(); // Cinco Cangreburgers por entregar.
     protected final Personajes personajes = new Personajes(auto, entregas); // Vecinos que reaccionan al auto.
@@ -42,9 +44,10 @@ public class Juego {
     protected boolean pausado = true; // El juego empieza detenido mostrando el menú de inicio.
     protected boolean iniciado = false; // Cambia a true la primera vez que se presiona P.
 
-    /** Conecta el auto con el tráfico para que también choque con los botes. */
+    /** Conecta el auto con el tráfico y con la chata para que también choquen. */
     public Juego() {
         auto.usarTrafico(trafico); // El auto consulta al tráfico antes de moverse.
+        auto.usarChata(chata); // El auto arrastra la chata y revisa que ella también quepa.
     }
 
     // ==================== 2. CICLO DE VIDA ====================
@@ -109,6 +112,7 @@ public class Juego {
     /** Restablece auto, entregas, cronómetro y tráfico para empezar de nuevo. */
     protected void reiniciar() {
         auto.reiniciar(); // Posición, orientación y velocidad iniciales.
+        chata.colocarDetras(auto.x, auto.z, auto.angulo); // Chata recta detrás del auto.
         entregas.reiniciar(); // Primera parada y cronómetro en cero.
         trafico.reiniciar(); // Cada bote al inicio de su ruta.
     }
@@ -122,7 +126,7 @@ public class Juego {
         }
         auto.actualizar(deltaTime, ventana); // Conducción, giros y colisiones.
         entregas.actualizar(deltaTime, auto); // Cronómetro y llegada a los destinos.
-        trafico.actualizar(deltaTime, auto); // Botes autónomos.
+        trafico.actualizar(deltaTime, auto, chata); // Botes autónomos: frenan ante el auto y la chata.
         render.tiempo += deltaTime; // Reloj de las animaciones: personajes, semáforos, medusas.
         actualizarTitulo(); // Indicador básico en la barra de la ventana.
     }
@@ -163,6 +167,7 @@ public class Juego {
     protected void dibujarEscena() {
         ciudad.dibujar(render); // Suelo, calles, manzanas, señales y farolas.
         auto.dibujar(render, luz.faros); // Botemóvil con Bob.
+        chata.dibujar(render); // Remolque detrás del auto.
         entregas.dibujar(render); // Marca dorada del destino activo.
         trafico.dibujar(render); // Botes autónomos.
         VidaMarina.dibujar(render); // Medusas y burbujas.
